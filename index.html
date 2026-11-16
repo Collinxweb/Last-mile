@@ -1,145 +1,161 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Last Mile: Single Lane Run</title>
+<title>Last Mile</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;800&family=Barlow:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:#15171c;color:#f1efe8;font:500 15px Barlow,Arial,sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
-.f{font-family:"Barlow Condensed",Impact,Arial,sans-serif;font-weight:800}
+html,body{margin:0;height:100%;background:#0c0e13;color:#f1efe8;font:600 15px Barlow,Arial,sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+button{font-family:inherit;color:inherit}
 #app{position:fixed;inset:0;overflow:hidden}
-#c{position:absolute;inset:0;width:100%;height:100%}
-.pill{display:inline-flex;align-items:center;gap:6px;background:rgba(22,24,30,.82);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:4px 10px 4px 6px;font-weight:700;white-space:nowrap}
-.pill img{width:22px;height:30px;object-fit:contain;border-radius:4px;background:#262626}
-.yel{background:rgba(255,201,40,.95);color:#1d2027;border-color:#0b0c0f}
-#hud{position:absolute;left:10px;right:10px;top:10px;display:none;pointer-events:none}
-#topl{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.ibtn{pointer-events:auto;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(22,24,30,.85);padding:6px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.ibtn img{width:100%;height:100%;object-fit:contain}
-#obj{margin-top:8px;font:800 18px "Barlow Condensed",Arial;display:inline-block}
-#tmr{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
-#tmr .pill{font:800 17px "Barlow Condensed",Arial}
-#rightcol,#midcol{position:absolute;right:10px;display:none;flex-direction:column;gap:10px;align-items:center}
-#rightcol{top:70px}
-#midcol{top:42%}
-.rb{pointer-events:auto;width:58px;height:58px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(22,24,30,.85);color:#fff;font:800 12px "Barlow Condensed",Arial;padding:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column}
-.rb img{width:26px;height:36px;object-fit:contain}
-#ctl{position:absolute;left:10px;right:10px;bottom:12px;display:none;justify-content:space-between;align-items:flex-end}
-#wheel{width:150px;height:150px;border-radius:50%;overflow:hidden;touch-action:none;cursor:grab;box-shadow:0 6px 16px rgba(0,0,0,.6)}
-#wheel img{width:100%;height:100%;display:block;transform-origin:50% 50%}
+#scene{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* ----- HUD ----- */
+.chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:8px;background:rgba(14,16,22,.82);border:1px solid rgba(255,255,255,.14);font-weight:700;white-space:nowrap}
+.chip img{width:18px;height:18px;object-fit:contain}
+.chip.obj{background:#ffc928;color:#1d2027;border-color:#0b0c0f;font:800 17px "Barlow Condensed",Arial;height:34px;padding:0 12px}
+.num{font:800 18px "Barlow Condensed",Arial;letter-spacing:.3px}
+#hudTop{position:absolute;left:12px;top:12px;display:none;flex-direction:column;align-items:flex-start;gap:8px;pointer-events:none}
+#hudTop .row{display:flex;gap:6px;align-items:center}
+#hudTop .chip,#hudTop .ibtn{pointer-events:auto}
+.ibtn{width:36px;height:30px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(14,16,22,.82);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.ibtn img{width:18px;height:18px;object-fit:contain}
+#hudRight{position:absolute;right:12px;top:92px;display:none;flex-direction:column;gap:8px;align-items:flex-end}
+.tool{min-width:58px;height:44px;padding:0 10px;border-radius:10px;background:rgba(14,16,22,.85);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;gap:6px;font:800 14px "Barlow Condensed",Arial;letter-spacing:.4px;cursor:pointer}
+.tool img{width:18px;height:18px;object-fit:contain}
+.tool:active{background:rgba(255,201,40,.9);color:#1d2027}
+#hudBottom{position:absolute;left:12px;right:12px;bottom:12px;display:none;justify-content:space-between;align-items:flex-end}
+#wheel{width:124px;height:124px;border-radius:50%;overflow:hidden;cursor:grab;touch-action:none;box-shadow:0 6px 18px rgba(0,0,0,.55)}
+#wheel img{width:100%;height:100%;display:block}
 #pedals{display:flex;gap:10px;align-items:flex-end}
-.pd{width:100px;height:112px;border:0;background:none;padding:0;cursor:pointer}
-.pd img{width:100%;height:100%;object-fit:contain;transition:transform .05s}
-.pd.on img{transform:translateY(3px) scale(.97);filter:brightness(1.2)}
-#toast{position:absolute;left:12px;right:12px;top:118px;display:none;text-align:center;background:rgba(20,22,28,.92);border:1px solid rgba(255,255,255,.14);border-left:6px solid #ffc928;border-radius:8px;padding:9px 12px;font-weight:700;pointer-events:none}
-.scr{position:absolute;inset:0;display:none;overflow-y:auto;padding:18px 14px 26px;background:rgba(18,20,26,.95)}
-.scr.show{display:block}
-.scr h1{font:800 46px/.95 "Barlow Condensed",Arial;color:#ffc928;margin:4px 0 8px}
-.scr p{margin:0 0 10px;max-width:36em;line-height:1.38}
-.mc{display:block;width:100%;text-align:left;color:#1d2027;background:#f6f1e3;border:2px solid #0b0c0f;border-left:12px solid #ffc928;border-radius:8px;padding:10px 12px;margin-bottom:10px;cursor:pointer;font:inherit}
-.mc b{display:block;font:800 22px "Barlow Condensed",Arial}
-.mc i{display:block;font-style:normal;font-weight:700;color:#7a5a00;font-size:13px}
-.mc span{display:block;font-size:14px;margin-top:4px}
-.badge{display:inline-block;font-size:11px;font-weight:800;background:#0b0c0f;color:#ffc928;border-radius:4px;padding:1px 6px}
-.big{font:800 19px "Barlow Condensed",Arial;color:#1d2027;background:#ffc928;border:2px solid #0b0c0f;border-radius:8px;padding:9px 18px;margin:0 8px 8px 0;cursor:pointer}
-.big.a{background:#f6f1e3}
-.fine{font-size:12px;opacity:.7}
-#guide{position:absolute;left:10px;right:10px;bottom:10px;display:none;background:rgba(20,22,28,.97);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:14px;max-height:55%;overflow-y:auto}
+.pedal{width:92px;height:104px;border:0;padding:0;background:none;cursor:pointer;touch-action:none}
+.pedal img{width:100%;height:100%;object-fit:contain;pointer-events:none}
+.pedal.on img{transform:translateY(3px) scale(.96)}
+
+#toast{position:absolute;left:50%;top:58px;transform:translateX(-50%);display:none;max-width:70%;text-align:center;background:rgba(14,16,22,.9);border-left:5px solid #ffc928;border-radius:8px;padding:8px 14px;font-weight:700;pointer-events:none}
+
+/* ----- screens ----- */
+.screen{position:absolute;inset:0;display:none;overflow-y:auto;padding:22px 18px 28px;background:rgba(12,14,19,.96)}
+.screen.show{display:block}
+.screen h1{font:800 46px/.95 "Barlow Condensed",Arial;color:#ffc928;margin:4px 0 10px}
+.screen p{margin:0 0 12px;max-width:38em;line-height:1.4}
+.fine{font-size:12px;opacity:.65}
+.mission{display:block;width:100%;text-align:left;color:#1d2027;background:#f6f1e3;border:2px solid #0b0c0f;border-left:10px solid #ffc928;border-radius:10px;padding:12px 14px;margin-bottom:10px;cursor:pointer;font:inherit}
+.mission b{display:block;font:800 22px "Barlow Condensed",Arial}
+.mission i{display:block;font-style:normal;font-weight:700;color:#7a5a00;font-size:13px}
+.mission span{display:block;font-size:14px;margin-top:4px;line-height:1.35}
+.tag{display:inline-block;font-size:11px;font-weight:800;background:#0b0c0f;color:#ffc928;border-radius:4px;padding:1px 6px;margin-left:4px}
+.btn{font:800 18px "Barlow Condensed",Arial;color:#1d2027;background:#ffc928;border:2px solid #0b0c0f;border-radius:8px;padding:9px 18px;margin:0 8px 8px 0;cursor:pointer}
+.btn.alt{background:#f6f1e3}
+.btn:disabled{opacity:.5}
+#guide{position:absolute;left:12px;right:12px;bottom:12px;display:none;background:rgba(14,16,22,.97);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:14px;max-height:58%;overflow-y:auto}
 #guide h3{margin:0 0 6px;font:800 20px "Barlow Condensed",Arial;color:#ffc928}
-#mapov{position:absolute;inset:0;display:none;background:rgba(15,17,22,.97);padding:70px 20px 20px}
-#progress{position:relative;height:60px;margin-top:40px}
+#mapScreen{position:absolute;inset:0;display:none;background:rgba(12,14,19,.97);padding:70px 22px 22px}
+#progress{position:relative;height:60px;margin:34px 0}
 #progress .track{position:absolute;left:0;right:0;top:26px;height:8px;background:#3a3f4a;border-radius:4px}
 #progress .done{position:absolute;left:0;top:26px;height:8px;background:#2fbf71;border-radius:4px}
 #progress .mk{position:absolute;top:14px;width:4px;height:32px;margin-left:-2px}
 #progress .lab{position:absolute;top:0;transform:translateX(-50%);font:800 13px "Barlow Condensed",Arial;white-space:nowrap}
-#progress .car{position:absolute;top:20px;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:#16b3a4;border:2px solid #fff}
+#progress .dot{position:absolute;top:20px;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:#16b3a4;border:2px solid #fff}
 </style></head><body>
 <div id="app">
-<canvas id="c"></canvas>
+  <canvas id="scene"></canvas>
 
-<div id="hud">
-  <div id="topl">
-    <button class="ibtn" id="pause" aria-label="Pause"><img src="assets/icon_pause.png" alt=""></button>
-    <span class="pill" id="clock"></span>
-    <span class="pill" id="loc">New York, USA</span>
+  <div id="hudTop">
+    <div class="row">
+      <button class="ibtn" id="btnPause" aria-label="Pause"><img src="assets/icon_pause.png" alt=""></button>
+      <span class="chip" id="clock"></span>
+      <span class="chip" id="place">New York, USA</span>
+    </div>
+    <div class="chip obj" id="objective"></div>
+    <div class="row">
+      <span class="chip"><img src="assets/icon_timer.png" alt=""><span class="num" id="timeLeft">--</span></span>
+      <span class="chip"><img src="assets/icon_speed.png" alt=""><span class="num" id="speed">0 mph</span></span>
+      <span class="chip"><img src="assets/icon_package.png" alt=""><span id="nextStop">--</span></span>
+    </div>
   </div>
-  <div id="obj" class="pill yel"></div>
-  <div id="tmr">
-    <span class="pill"><img src="assets/icon_timer.png" alt=""><span class="f" id="tm"></span></span>
-    <span class="pill"><img src="assets/icon_speed.png" alt=""><span class="f" id="mph"></span></span>
-    <span class="pill"><img src="assets/icon_package.png" alt=""><span id="st"></span></span>
+
+  <div id="hudRight">
+    <button class="tool" id="btnMap"><img src="assets/icon_map.png" alt="">MAP</button>
+    <button class="tool" id="btnGuide">GUIDE</button>
+    <button class="tool" id="btnCam"><img src="assets/icon_camera.png" alt=""><span id="camName">CHASE</span></button>
+    <button class="tool" id="btnHorn"><img src="assets/icon_horn.png" alt="">HORN</button>
+    <button class="tool" id="btnMusic">MUSIC</button>
   </div>
-</div>
-<div id="rightcol">
-  <button class="rb" id="bMap"><img src="assets/icon_map.png" alt="">MAP</button>
-  <button class="rb" id="bGuide">GUIDE</button>
-</div>
-<div id="midcol">
-  <button class="rb" id="bCam"><img src="assets/icon_camera.png" alt="">CHASE</button>
-  <button class="rb" id="bHorn"><img src="assets/icon_horn.png" alt="">HORN</button>
-  <button class="rb" id="bMusic">MUSIC</button>
-</div>
-<div id="toast"></div>
 
-<div id="guide">
-  <h3 id="gtitle">Dispatcher</h3>
-  <p id="gtext"></p>
-  <button class="big" id="ask">Ask the dispatcher (AI)</button>
-  <button class="big a" id="gclose">Close</button>
-</div>
+  <div id="toast"></div>
 
-<div id="ctl">
-  <div id="wheel" aria-label="Steering wheel"><img id="wimg" src="assets/steering_wheel.jpg" alt=""></div>
-  <div id="pedals">
-    <button class="pd" id="brake" aria-label="Brake"><img src="assets/btn_brake.png" alt=""></button>
-    <button class="pd" id="accel" aria-label="Accelerate"><img src="assets/btn_accel.png" alt=""></button>
+  <div id="hudBottom">
+    <div id="wheel" aria-label="Steering wheel"><img id="wheelImg" src="assets/steering_wheel.jpg" alt=""></div>
+    <div id="pedals">
+      <button class="pedal" id="brake" aria-label="Brake"><img src="assets/btn_brake.png" alt=""></button>
+      <button class="pedal" id="accel" aria-label="Accelerate"><img src="assets/btn_accel.png" alt=""></button>
+    </div>
   </div>
-</div>
 
-<div id="mapov">
-  <h1 class="f" style="color:#ffc928;margin:0">Route</h1>
-  <p id="mapText"></p>
-  <div id="progress"></div>
-  <button class="big" id="mapClose" style="margin-top:40px">Close map</button>
-</div>
+  <div id="guide">
+    <h3 id="guideTitle">Dispatcher</h3>
+    <p id="guideText"></p>
+    <button class="btn" id="btnAsk">Ask the dispatcher (AI)</button>
+    <button class="btn alt" id="btnGuideClose">Close</button>
+  </div>
 
-<div class="scr show" id="menu">
-  <h1>Last Mile</h1>
-  <p>The big labs are in a cold war, and the newest AI hardware still moves by hand. You drive for the Relay, a quiet courier network. Each real headline becomes a contract: a sealed drive, testimony papers, a late-night core. Rival fleets are watching.</p>
-  <div id="ml"></div>
-  <p class="fine">Fictional story. Headlines link to their sources and are marked "reported" until reviewed. Steer with the wheel or arrow keys, ACCEL to go, BRAKE to stop. CHASE, HIGH and COCKPIT change the camera.</p>
-</div>
+  <div id="mapScreen">
+    <h1 style="font:800 40px 'Barlow Condensed',Arial;color:#ffc928;margin:0 0 6px">Route</h1>
+    <p id="mapText"></p>
+    <div id="progress"></div>
+    <button class="btn" id="btnMapClose">Close map</button>
+  </div>
 
-<div class="scr" id="res">
-  <h1 id="rt"></h1>
-  <p id="rd"></p>
-  <button class="big" id="rn"></button>
-  <button class="big a" id="rm">Missions</button>
-</div>
+  <div class="screen show" id="menu">
+    <h1>Last Mile</h1>
+    <p>The big labs are in a cold war, and the newest AI hardware still moves by hand. You drive for the Relay, a quiet courier network. Each real headline becomes a contract: a sealed drive, testimony papers, a late-night core. Rival fleets are watching.</p>
+    <div id="missionList"></div>
+    <p class="fine">Fictional story. Headlines link to their sources and are marked "reported" until reviewed. Steer with the wheel or arrow keys. ACCEL to go, BRAKE to stop. CHASE, HIGH and COCKPIT change the camera.</p>
+  </div>
+
+  <div class="screen" id="result">
+    <h1 id="resultTitle"></h1>
+    <p id="resultText"></p>
+    <button class="btn" id="btnNext"></button>
+    <button class="btn alt" id="btnMissions">Missions</button>
+  </div>
 </div>
 
 <script>
-(async () => {
+(() => {
 "use strict";
+
+/* ================= helpers ================= */
 const $ = id => document.getElementById(id);
-const cl = (v, a, b) => Math.max(a, Math.min(b, v));
-const wrap = a => { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; };
-const ord = n => n + ((n % 100 > 10 && n % 100 < 14) ? "th" : (["th", "st", "nd", "rd"][n % 10] || "th"));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const wrapAngle = a => { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; };
+const ordinal = n => n + ((n % 100 > 10 && n % 100 < 14) ? "th" : (["th", "st", "nd", "rd"][n % 10] || "th"));
 
-/* ---------- assets ---------- */
-const load = src => new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
-const [bgDay, bgNight, sCoupeA, sCoupeB, sSky, sCoupeC, sStudio, sWhite] = await Promise.all([
-  load("assets/bg_day.jpg"), load("assets/bg_night.jpg"),
-  load("assets/car_blue_coupe_a.png"), load("assets/car_blue_coupe_b.png"), load("assets/car_sky_blue.png"),
-  load("assets/car_blue_coupe_c.png"), load("assets/car_blue_studio.png"), load("assets/car_blue_white_bg.png")]);
-const TRAFFIC_SPRITES = [sSky, sCoupeB, sWhite, sCoupeC, sStudio].filter(Boolean);
-const PLAYER_SPRITE = sCoupeA;
+/* ================= assets (loaded in the background; the menu never waits) ================= */
+const assets = {};
+function loadImage(name, src) {
+  const img = new Image();
+  img.onload = () => { assets[name] = img; };
+  img.onerror = () => console.warn("Missing asset:", src);
+  img.src = src;
+}
+[
+  ["dayBg", "assets/bg_day.jpg"], ["nightBg", "assets/bg_night.jpg"],
+  ["playerCar", "assets/car_blue_coupe_a.png"],
+  ["trafficA", "assets/car_sky_blue.png"], ["trafficB", "assets/car_blue_coupe_b.png"],
+  ["trafficC", "assets/car_blue_white_bg.png"], ["trafficD", "assets/car_blue_coupe_c.png"],
+  ["rival", "assets/car_blue_studio.png"]
+].forEach(([n, s]) => loadImage(n, s));
+const TRAFFIC_KEYS = ["trafficA", "trafficB", "trafficC", "trafficD"];
 
-/* ---------- news ---------- */
-const newsData = await fetch("news.json").then(r => r.json()).catch(() => ({ items: [] }));
-const NEWS = Object.fromEntries(newsData.items.map(n => [n.id, n]));
+/* ================= news and missions ================= */
+let NEWS = {};
+fetch("news.json").then(r => r.json()).then(d => {
+  NEWS = Object.fromEntries(d.items.map(n => [n.id, n]));
+  renderMissionList();
+}).catch(() => renderMissionList());
 
-/* ---------- missions ---------- */
 const MISSIONS = [
   { title: "Release Rush", chapter: "Chapter 1 · Midtown", news: "gpt-5-6", time: 60, pick: 350, drop: 800, rival: false, night: false,
     story: "The Relay has a sealed drive from a lab that shipped overnight. The embargo lifts when the clock runs out. Get it downtown before the crowd does.",
@@ -149,343 +165,430 @@ const MISSIONS = [
     hint: "The rival car sits ahead in the lane. Move over early on a bend and pass it on the straight." },
   { title: "Testimony Run", chapter: "Chapter 3 · Hearing Day", news: "self-regulation", time: 80, pick: 300, drop: 1200, rival: true, night: false,
     story: "A committee needs certification papers before lawmakers vote. Critics say the rules may favour the big labs. Your papers must arrive either way.",
-    hint: "Save your braking for the rival car. Coast when you can to keep the papers dry and the speed steady." },
+    hint: "Save your braking for the rival car. Coast when you can to keep the speed steady." },
   { title: "Grok Dash", chapter: "Chapter 4 · Blackout", news: "grok-4-5", time: 75, pick: 400, drop: 1000, rival: false, night: true,
     story: "A rumoured model drop tonight, and a rival wants the benchmark data first. The grid is patchy after dark. Use your headlights and get it there.",
     hint: "At night you only see what the headlights reach. Slow down a little before the bends." }
 ];
 
-/* ---------- road geometry ---------- */
-const F = 420, DMAX = 320, ROAD = 6, LEN = 1400;
-const OFF = s => 14 * Math.sin(s / 300) + 5 * Math.sin(s / 110 + 1.3);
-const TCOL = ["#f7c600", "#c9ccd2", "#8d3b3b", "#3a5f8f"];
-let seed = 20261116;
-const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-const traffic = [];
-for (let i = 0; i < 9; i++) traffic.push({ s: 90 + i * 45 + rnd() * 20, lat: (rnd() * 2 - 1) * 4, v: 10 + rnd() * 6,
-  sprite: TRAFFIC_SPRITES.length ? TRAFFIC_SPRITES[i % TRAFFIC_SPRITES.length] : null, hue: (i * 47) % 360, col: TCOL[i % TCOL.length] });
-
-/* ---------- canvas & view ---------- */
-const cv = $("c"), ctx = cv.getContext("2d");
-let W = 0, H = 0, D = 1, HY = 0, bgScale = 1, bgW = 0, bgH = 0;
-function resize() {
-  D = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight;
-  cv.width = W * D; cv.height = H * D;
-  HY = H * 0.46;
-  bgH = H * 1.3; bgW = bgH * (1024 / 768);
+function renderMissionList() {
+  $("missionList").innerHTML = MISSIONS.map((m, i) => {
+    const n = NEWS[m.news];
+    return `<button class="mission" data-i="${i}">
+      <b>${m.title}</b><i>${m.chapter}</i>
+      <span>${m.story}</span>
+      <span><strong>News:</strong> ${n ? n.headline : "Fictional scenario"}
+      <span class="tag">${n ? n.status.toUpperCase() : "FICTION"}</span></span></button>`;
+  }).join("");
 }
-addEventListener("resize", resize); resize();
+$("missionList").addEventListener("click", e => {
+  const b = e.target.closest(".mission");
+  if (b) startMission(+b.dataset.i);
+});
+
+/* ================= road model ================= */
+const LANE_HALF = 6.4;             // metres from centre to kerb edge of the single lane
+const VIEW_DIST = 320;             // how far ahead we draw, metres
+const SEG = 3;                     // drawing step along the road, metres
+const CURVE = s => 14 * Math.sin(s / 300) + 5 * Math.sin(s / 110 + 1.3);   // lateral bend of the road
+
+let seed = 20261116;
+const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+const traffic = Array.from({ length: 9 }, (_, i) => ({
+  s: 90 + i * 45 + rand() * 20, lat: (rand() * 2 - 1) * 4, v: 10 + rand() * 6,
+  key: TRAFFIC_KEYS[i % TRAFFIC_KEYS.length], hue: (i * 47) % 360
+}));
+
+/* ================= canvas and projection ================= */
+const canvas = $("scene"), ctx = canvas.getContext("2d");
+let W = 0, H = 0, DPR = 1, HORIZON = 0;
+function resize() {
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = W * DPR; canvas.height = H * DPR;
+  HORIZON = H * 0.44;
+}
+window.addEventListener("resize", resize);
+resize();
+
+const FOCAL = 420;
 const VIEWS = [
   { name: "CHASE", camD: 8, camH: 1.3, follow: 0.5, showCar: true },
   { name: "HIGH", camD: 13, camH: 3.4, follow: 0.5, showCar: true },
   { name: "COCKPIT", camD: 0.6, camH: 1.15, follow: 1, showCar: false }
 ];
-let viewI = 0, V = { camS: 0, camLat: 0, camH: 1.3 };
-const PX = (lat, s) => W / 2 + (lat + OFF(s) - OFF(V.camS) - V.camLat) * F / (s - V.camS);
-const PY = (h, s) => HY + (V.camH - h) * F / (s - V.camS);
+let viewIndex = 0;
+let cam = { s: 0, lat: 0, h: 1.3 };
+const projX = (lat, s) => W / 2 + (lat + CURVE(s) - CURVE(cam.s) - cam.lat) * FOCAL / (s - cam.s);
+const projY = (h, s) => HORIZON + (cam.h - h) * FOCAL / (s - cam.s);
 
-/* ---------- state ---------- */
-let mode = "menu", mi = 0, M = MISSIONS[0], selected = 0;
-let car = { s: 0, lat: 0, v: 0 }, rival = null, stage = 0, tl = 0, integ = 100, tt = 0;
-let wheel = 0, dragging = false, dragA0 = 0, accelOn = false, brakeOn = false, paused = false, bonkCd = 0, toastT = 0;
-const keys = { l: false, r: false };
+/* ================= game state ================= */
+let mode = "menu";            // menu | play | paused | result
+let M = MISSIONS[0], missionIndex = 0;
+let car = { s: 0, lat: 0, v: 0 };
+let rival = null, stage = 0, timeLeft = 0, integrity = 100, clock = 0, bonkCooldown = 0, toastTimer = 0;
+let wheel = 0, wheelDrag = false, wheelAnchor = 0, accelHeld = false, brakeHeld = false, musicOn = false;
+const keys = { left: false, right: false };
 
-/* ---------- menu ---------- */
-$("ml").innerHTML = MISSIONS.map((m, i) => {
-  const n = NEWS[m.news];
-  return `<button class="mc" data-i="${i}"><b>${m.title}</b><i>${m.chapter}</i>
-    <span>${m.story}</span>
-    <span><b style="font:700 13px Barlow;display:inline">News:</b> ${n ? n.headline : "Fictional scenario"}
-    <span class="badge">${n ? n.status.toUpperCase() : "FICTION"}</span></span></button>`;
-}).join("");
-$("ml").addEventListener("click", e => { const b = e.target.closest(".mc"); if (b) { selected = +b.dataset.i; start(selected); } });
-
-/* ---------- music ---------- */
-let AC = null, musicOn = false, nextT = 0, stepI = 0, musicTimer = null;
-const getAC = () => { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === "suspended") AC.resume(); return AC; };
-const STEP = 60 / 124 / 2;
-const BASS_ROOT = [45, 41, 48, 43];
+/* ================= music (procedural, no audio files) ================= */
+let audio = null, nextNoteTime = 0, step = 0, musicTimer = null;
+const STEP_SEC = 60 / 124 / 2;
+const BASS = [45, 41, 48, 43];
 const ARP = [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]];
-function tone(midi, type, t, dur, vol) {
-  const o = AC.createOscillator(), g = AC.createGain();
+function ac() {
+  if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+  if (audio.state === "suspended") audio.resume();
+  return audio;
+}
+function note(midi, type, t, dur, vol) {
+  const o = audio.createOscillator(), g = audio.createGain();
   o.type = type; o.frequency.value = 440 * Math.pow(2, (midi - 69) / 12);
   g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + dur + 0.02);
+  o.connect(g); g.connect(audio.destination); o.start(t); o.stop(t + dur + 0.02);
 }
 function kick(t) {
-  const o = AC.createOscillator(), g = AC.createGain();
+  const o = audio.createOscillator(), g = audio.createGain();
   o.frequency.setValueAtTime(120, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.15);
   g.gain.setValueAtTime(0.25, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
-  o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + 0.22);
+  o.connect(g); g.connect(audio.destination); o.start(t); o.stop(t + 0.22);
 }
-function playStep(i, t) {
-  const bar = Math.floor(i / 8) % 4, w = i % 8, root = BASS_ROOT[bar];
-  tone(root + (w % 2 ? 12 : 0), "sawtooth", t, STEP * 0.9, 0.06);
-  tone(ARP[bar][w % 3] + 12, "square", t, STEP * 0.8, 0.02);
+function scheduleStep(i, t) {
+  const bar = Math.floor(i / 8) % 4, w = i % 8;
+  note(BASS[bar] + (w % 2 ? 12 : 0), "sawtooth", t, STEP_SEC * 0.9, 0.06);
+  note(ARP[bar][w % 3] + 12, "square", t, STEP_SEC * 0.8, 0.02);
   if (w % 4 === 0) kick(t);
 }
 function setMusic(on) {
+  musicOn = on;
   if (on) {
-    getAC();
-    if (nextT < AC.currentTime) nextT = AC.currentTime + 0.05;
-    musicOn = true;
+    ac();
+    if (nextNoteTime < audio.currentTime) nextNoteTime = audio.currentTime + 0.05;
     if (!musicTimer) musicTimer = setInterval(() => {
       if (!musicOn) return;
-      while (nextT < AC.currentTime + 0.2) { playStep(stepI, nextT); nextT += STEP; stepI++; }
+      while (nextNoteTime < audio.currentTime + 0.2) { scheduleStep(step, nextNoteTime); nextNoteTime += STEP_SEC; step++; }
     }, 50);
-  } else musicOn = false;
-  $("bMusic").textContent = musicOn ? "MUSIC ON" : "MUSIC OFF";
+  }
+  $("btnMusic").textContent = on ? "MUSIC ON" : "MUSIC OFF";
 }
-$("bMusic").onclick = () => setMusic(!musicOn);
+$("btnMusic").addEventListener("click", () => setMusic(!musicOn));
 
-/* ---------- flow ---------- */
-function toast(s) { $("toast").textContent = s; $("toast").style.display = "block"; toastT = 3.2; }
-function start(i) {
-  mi = i; M = MISSIONS[i];
-  car = { s: 0, lat: 0, v: 0 }; stage = 0; tl = M.time; integ = 100; tt = 0; bonkCd = 0; paused = false;
-  rival = M.rival ? { s: M.pick + 130, lat: 0, v: 17, sprite: sStudio || sCoupeC } : null;
-  traffic.forEach((t, k) => { t.s = 90 + k * 45 + rnd() * 20; });
+function playHorn() {
+  try {
+    const a = ac(), o = a.createOscillator(), g = a.createGain();
+    o.type = "square"; o.frequency.value = 440; g.gain.value = 0.05;
+    o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + 0.35);
+  } catch (e) { /* audio is optional */ }
+}
+$("btnHorn").addEventListener("click", playHorn);
+
+/* ================= toast ================= */
+function toast(text) {
+  const t = $("toast"); t.textContent = text; t.style.display = "block"; toastTimer = 3;
+}
+
+/* ================= mission flow ================= */
+function startMission(i) {
+  missionIndex = i; M = MISSIONS[i];
+  car = { s: 0, lat: 0, v: 0 };
+  stage = 0; timeLeft = M.time; integrity = 100; clock = 0; bonkCooldown = 0;
+  rival = M.rival ? { s: M.pick + 130, lat: 0, v: 17, key: "rival" } : null;
+  traffic.forEach((t, k) => { t.s = 90 + k * 45 + rand() * 20; });
   mode = "play";
-  ["menu", "res"].forEach(id => $(id).classList.remove("show"));
-  $("hud").style.display = "block";
-  for (const id of ["rightcol", "midcol", "ctl"]) $(id).style.display = "flex";
+  $("menu").classList.remove("show"); $("result").classList.remove("show"); $("mapScreen").style.display = "none";
+  setHudVisible(true);
   if (!musicOn) setMusic(true);
-  toast("Dispatch: " + M.story.split(".")[0] + ".");
+  toast(M.story.split(".")[0] + ".");
   refreshGuide();
 }
-function endMission(win, why) {
-  mode = "end";
-  for (const id of ["hud", "ctl", "rightcol", "midcol", "guide", "mapov"]) $(id).style.display = "none";
-  $("rt").textContent = win ? "Delivered" : "Contract lost";
-  $("rd").textContent = win ? `${M.title} complete with ${Math.ceil(tl)}s to spare. ${mi < MISSIONS.length - 1 ? "The Relay has another contract waiting." : "All four contracts delivered. The Relay owes you one."}` : why;
-  $("rn").textContent = win && mi < MISSIONS.length - 1 ? "Next mission" : "Retry";
-  $("rn").onclick = () => start(win && mi < MISSIONS.length - 1 ? mi + 1 : mi);
-  $("res").classList.add("show");
+function setHudVisible(v) {
+  const d = v ? "flex" : "none";
+  $("hudTop").style.display = $("hudRight").style.display = $("hudBottom").style.display = d;
 }
-$("rm").onclick = () => { $("res").classList.remove("show"); $("menu").classList.add("show"); mode = "menu"; };
+function finishMission(won, reason) {
+  mode = "result";
+  setHudVisible(false); $("guide").style.display = "none";
+  $("resultTitle").textContent = won ? "Delivered" : "Contract lost";
+  $("resultText").textContent = won
+    ? `${M.title} complete with ${Math.ceil(timeLeft)}s to spare. ${missionIndex < MISSIONS.length - 1 ? "The Relay has another contract waiting." : "All four contracts delivered."}`
+    : reason;
+  const hasNext = won && missionIndex < MISSIONS.length - 1;
+  $("btnNext").textContent = hasNext ? "Next mission" : "Retry";
+  $("btnNext").onclick = () => startMission(hasNext ? missionIndex + 1 : missionIndex);
+  $("result").classList.add("show");
+}
+$("btnMissions").addEventListener("click", () => { $("result").classList.remove("show"); $("menu").classList.add("show"); mode = "menu"; });
 
-/* ---------- guide ---------- */
-const guideHint = () => `${stage === 0 ? "Reach the pickup gantry." : "Reach the drop gantry."} ${M.hint}`;
-function refreshGuide() { $("gtitle").textContent = `Dispatcher · ${M.title}`; $("gtext").textContent = guideHint(); }
-$("bGuide").onclick = () => { refreshGuide(); paused = true; $("guide").style.display = "block"; };
-$("gclose").onclick = () => { $("guide").style.display = "none"; paused = false; };
-$("ask").onclick = async () => {
-  $("ask").disabled = true; $("gtext").textContent = "Dispatcher is typing…";
+/* ================= guide ================= */
+const stageHint = () => `${stage === 0 ? "Reach the pickup gantry." : "Reach the drop gantry."} ${M.hint}`;
+function refreshGuide() { $("guideTitle").textContent = `Dispatcher · ${M.title}`; $("guideText").textContent = stageHint(); }
+function openGuide() { refreshGuide(); mode = "paused"; $("guide").style.display = "block"; }
+function closeGuide() { $("guide").style.display = "none"; mode = "play"; }
+$("btnGuide").addEventListener("click", openGuide);
+$("btnGuideClose").addEventListener("click", closeGuide);
+$("btnAsk").addEventListener("click", async () => {
+  const btn = $("btnAsk"); btn.disabled = true; $("guideText").textContent = "Dispatcher is typing…";
   try {
     const r = await fetch("/api/guide", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mission: M.title, story: M.story, news: NEWS[M.news] || null, stage, question: "Give the driver a short tactical hint for this stage." }) });
     const j = await r.json();
-    $("gtext").textContent = j.text || guideHint();
-  } catch (e) { $("gtext").textContent = guideHint(); }
-  $("ask").disabled = false;
-};
+    $("guideText").textContent = j.text || stageHint();
+  } catch (e) { $("guideText").textContent = stageHint(); }
+  btn.disabled = false;
+});
 
-/* ---------- route map ---------- */
-function showMap() {
-  paused = true; $("mapov").style.display = "block";
-  const goal = stage === 0 ? M.pick : M.drop;
+/* ================= route map ================= */
+function openMap() {
+  const wasMode = mode; mode = "paused";
+  const goal = stage === 0 ? M.pick : M.drop, pct = v => (v / M.drop * 100) + "%", done = clamp(car.s / M.drop * 100, 0, 100);
   $("mapText").textContent = `Stage ${stage + 1} of 2: ${stage === 0 ? "pickup" : "drop-off"} in ${Math.max(0, Math.round(goal - car.s))} m.`;
-  const pct = v => (v / M.drop * 100) + "%", cp = cl(car.s / M.drop * 100, 0, 100);
-  $("progress").innerHTML = `<div class="track"></div><div class="done" style="width:${cp}%"></div>
+  $("progress").innerHTML = `<div class="track"></div><div class="done" style="width:${done}%"></div>
     <div class="mk" style="left:${pct(M.pick)};background:#2fe0ff"></div><div class="lab" style="left:${pct(M.pick)};color:#2fe0ff">PICKUP</div>
     <div class="mk" style="left:${pct(M.drop)};background:#ffc928"></div><div class="lab" style="left:${pct(M.drop)};color:#ffc928">DROP</div>
-    <div class="car" style="left:${cp}%"></div>`;
+    <div class="dot" style="left:${done}%"></div>`;
+  $("mapScreen").style.display = "block";
+  $("mapScreen").dataset.resume = wasMode;
 }
-$("bMap").onclick = showMap;
-$("mapClose").onclick = () => { $("mapov").style.display = "none"; paused = false; };
+$("btnMap").addEventListener("click", openMap);
+$("btnMapClose").addEventListener("click", () => { $("mapScreen").style.display = "none"; mode = $("mapScreen").dataset.resume || "play"; });
 
-/* ---------- horn & camera ---------- */
-function horn() {
-  try { const a = getAC(), o = a.createOscillator(), g = a.createGain(); o.type = "square"; o.frequency.value = 440;
-    o.connect(g); g.connect(a.destination); g.gain.value = 0.05; o.start(); o.stop(a.currentTime + 0.35); } catch (e) {}
+/* ================= camera button ================= */
+$("btnCam").addEventListener("click", () => {
+  viewIndex = (viewIndex + 1) % VIEWS.length;
+  $("camName").textContent = VIEWS[viewIndex].name;
+});
+$("btnPause").addEventListener("click", () => {
+  if (mode === "play") { mode = "paused"; $("btnPause").style.opacity = 0.6; }
+  else if (mode === "paused" && $("guide").style.display !== "block" && $("mapScreen").style.display !== "block") { mode = "play"; $("btnPause").style.opacity = 1; }
+});
+
+/* ================= controls ================= */
+function holdButton(el, setState) {
+  const down = e => { e.preventDefault(); setState(true); el.classList.add("on"); try { el.setPointerCapture(e.pointerId); } catch (_) {} };
+  const up = () => { setState(false); el.classList.remove("on"); };
+  el.addEventListener("pointerdown", down);
+  el.addEventListener("pointerup", up);
+  el.addEventListener("pointercancel", up);
+  el.addEventListener("lostpointercapture", up);
 }
-$("bHorn").onclick = horn;
-$("bCam").onclick = () => { viewI = (viewI + 1) % VIEWS.length; $("bCam").lastChild.textContent = VIEWS[viewI].name; };
+holdButton($("accel"), v => accelHeld = v);
+holdButton($("brake"), v => brakeHeld = v);
 
-/* ---------- controls ---------- */
-const pedal = (id, setter) => {
-  const el = $(id), on = e => { e.preventDefault(); setter(true); el.classList.add("on"); try { el.setPointerCapture(e.pointerId); } catch (_) {} },
-        off = () => { setter(false); el.classList.remove("on"); };
-  el.addEventListener("pointerdown", on); el.addEventListener("pointerup", off);
-  el.addEventListener("pointercancel", off); el.addEventListener("lostpointercapture", off);
-};
-pedal("accel", v => accelOn = v);
-pedal("brake", v => brakeOn = v);
-const wEl = $("wheel");
-const wAng = e => { const r = wEl.getBoundingClientRect(); return Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)); };
-wEl.addEventListener("pointerdown", e => { e.preventDefault(); dragging = true; dragA0 = wAng(e) - wheel * 2.2; try { wEl.setPointerCapture(e.pointerId); } catch (_) {} });
-wEl.addEventListener("pointermove", e => { if (dragging) wheel = cl(wrap(wAng(e) - dragA0) / 2.2, -1, 1); });
-const wEnd = () => { dragging = false; };
-wEl.addEventListener("pointerup", wEnd); wEl.addEventListener("pointercancel", wEnd); wEl.addEventListener("lostpointercapture", wEnd);
-addEventListener("keydown", e => {
-  if (e.key === "ArrowLeft" || e.key === "a") keys.l = true;
-  if (e.key === "ArrowRight" || e.key === "d") keys.r = true;
-  if (e.key === "ArrowUp" || e.key === "w") accelOn = true;
-  if (e.key === " " || e.key === "ArrowDown" || e.key === "s") { brakeOn = true; e.preventDefault(); }
-  if (e.key === "c") $("bCam").click();
-});
-addEventListener("keyup", e => {
-  if (e.key === "ArrowLeft" || e.key === "a") keys.l = false;
-  if (e.key === "ArrowRight" || e.key === "d") keys.r = false;
-  if (e.key === "ArrowUp" || e.key === "w") accelOn = false;
-  if (e.key === " " || e.key === "ArrowDown" || e.key === "s") brakeOn = false;
-});
-$("pause").onclick = () => { if (mode !== "play") return; paused = !paused; $("pause").style.opacity = paused ? 0.6 : 1; };
+const wheelEl = $("wheel");
+const pointerAngle = e => { const r = wheelEl.getBoundingClientRect(); return Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)); };
+wheelEl.addEventListener("pointerdown", e => { e.preventDefault(); wheelDrag = true; wheelAnchor = pointerAngle(e) - wheel * 2.2; try { wheelEl.setPointerCapture(e.pointerId); } catch (_) {} });
+wheelEl.addEventListener("pointermove", e => { if (wheelDrag) wheel = clamp(wrapAngle(pointerAngle(e) - wheelAnchor) / 2.2, -1, 1); });
+const endWheel = () => { wheelDrag = false; };
+wheelEl.addEventListener("pointerup", endWheel);
+wheelEl.addEventListener("pointercancel", endWheel);
+wheelEl.addEventListener("lostpointercapture", endWheel);
 
-/* ---------- update ---------- */
-function update(dt) {
-  if (mode !== "play" || paused) return;
-  tt += dt; tl -= dt; toastT -= dt; bonkCd -= dt;
-  if (toastT <= 0) $("toast").style.display = "none";
-  if (brakeOn) car.v = Math.max(0, car.v - 14 * dt);
-  else if (accelOn) car.v = Math.min(34, car.v + 7 * dt);
+window.addEventListener("keydown", e => {
+  if (e.key === "ArrowLeft" || e.key === "a") keys.left = true;
+  if (e.key === "ArrowRight" || e.key === "d") keys.right = true;
+  if (e.key === "ArrowUp" || e.key === "w") accelHeld = true;
+  if (e.key === " " || e.key === "ArrowDown" || e.key === "s") { brakeHeld = true; e.preventDefault(); }
+  if (e.key === "c") $("btnCam").click();
+});
+window.addEventListener("keyup", e => {
+  if (e.key === "ArrowLeft" || e.key === "a") keys.left = false;
+  if (e.key === "ArrowRight" || e.key === "d") keys.right = false;
+  if (e.key === "ArrowUp" || e.key === "w") accelHeld = false;
+  if (e.key === " " || e.key === "ArrowDown" || e.key === "s") brakeHeld = false;
+});
+
+/* ================= simulation ================= */
+function simulate(dt) {
+  if (mode !== "play") return;
+  clock += dt; timeLeft -= dt; toastTimer -= dt; bonkCooldown -= dt;
+  if (toastTimer <= 0) $("toast").style.display = "none";
+
+  // speed: accelerate to about 76 mph, coast gently, brake hard
+  if (brakeHeld) car.v = Math.max(0, car.v - 14 * dt);
+  else if (accelHeld) car.v = Math.min(34, car.v + 7 * dt);
   else car.v = Math.max(0, car.v - 1.2 * dt);
-  if (!dragging) wheel *= Math.exp(-dt * 6);
-  const steer = cl(wheel + (keys.r ? 1 : 0) - (keys.l ? 1 : 0), -1, 1);
-  car.lat = cl(car.lat + steer * dt * (1.2 + car.v * 0.08), -ROAD + 1.2, ROAD - 1.2);
+
+  // steering: the wheel springs back to centre when released
+  if (!wheelDrag) wheel *= Math.exp(-dt * 6);
+  const steer = clamp(wheel + (keys.right ? 1 : 0) - (keys.left ? 1 : 0), -1, 1);
+  car.lat = clamp(car.lat + steer * dt * (1.2 + car.v * 0.08), -LANE_HALF + 1.2, LANE_HALF - 1.2);
   car.s += car.v * dt;
+
   for (const t of traffic) {
     t.s += t.v * dt;
-    if (t.s < car.s - 40) t.s = car.s + 220 + rnd() * 160;
-    if (Math.abs(t.s - car.s) < 4.5 && Math.abs(t.lat - car.lat) < 2.2) hit(4, true);
+    if (t.s < car.s - 40) t.s = car.s + 220 + rand() * 160;
+    if (Math.abs(t.s - car.s) < 4.5 && Math.abs(t.lat - car.lat) < 2.2) collide(4, true);
   }
   if (rival) {
     rival.s += rival.v * dt;
-    rival.lat = 3 * Math.sin(tt * 0.6);
+    rival.lat = 3 * Math.sin(clock * 0.6);
     if (rival.s < car.s - 40) rival.s = car.s + 220;
-    if (Math.abs(rival.s - car.s) < 4.5 && Math.abs(rival.lat - car.lat) < 2.2) hit(10, false);
+    if (Math.abs(rival.s - car.s) < 4.5 && Math.abs(rival.lat - car.lat) < 2.2) collide(10, false);
   }
+
   const goal = stage === 0 ? M.pick : M.drop;
   if (car.s >= goal) {
     if (stage === 0) { stage = 1; toast("Package secured. Now make the drop."); refreshGuide(); }
-    else { endMission(true); return; }
+    else { finishMission(true); return; }
   }
-  if (integ <= 0) { endMission(false, "Your car is totaled. Give the traffic and the rival car more room."); return; }
-  if (tl <= 0) { endMission(false, "The embargo lifted before you arrived."); return; }
-  $("obj").textContent = stage === 0 ? "Drive to the pickup gantry" : "Drive through the drop gantry";
-  $("tm").textContent = Math.ceil(tl) + "s";
-  $("mph").textContent = Math.round(car.v * 2.237) + " mph";
-  $("st").textContent = (stage === 0 ? "Pickup" : "Drop") + " in " + Math.max(0, Math.round(goal - car.s)) + " m";
-  $("loc").textContent = "New York, USA · " + (M.night ? "Midnight run" : "Midtown Avenue");
+  if (integrity <= 0) { finishMission(false, "Your car is totaled. Give the traffic and the rival more room."); return; }
+  if (timeLeft <= 0) { finishMission(false, "The embargo lifted before you arrived."); return; }
+
+  $("objective").textContent = stage === 0 ? "Drive to the pickup gantry" : "Drive through the drop gantry";
+  $("timeLeft").textContent = Math.ceil(timeLeft) + "s";
+  $("speed").textContent = Math.round(car.v * 2.237) + " mph";
+  $("nextStop").textContent = (stage === 0 ? "Pickup" : "Drop") + " in " + Math.max(0, Math.round(goal - car.s)) + " m";
+  $("place").textContent = "New York, USA · " + (M.night ? "Midnight run" : "Midtown Avenue");
   const now = new Date();
   $("clock").textContent = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) + " · " + now.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
-  $("wimg").style.transform = `rotate(${wheel * 110}deg)`;
+  $("wheelImg").style.transform = `rotate(${wheel * 110}deg)`;
 }
-function hit(dmg, slow) {
-  if (bonkCd > 0) return;
-  integ -= dmg; bonkCd = 1.0; car.v *= slow ? 0.6 : 0.4;
-  toast(dmg >= 10 ? "Rival fleet clipped you!" : "Bump! Watch the traffic ahead.");
+function collide(damage, slowsCar) {
+  if (bonkCooldown > 0) return;
+  integrity -= damage; bonkCooldown = 1; car.v *= slowsCar ? 0.6 : 0.4;
+  toast(damage >= 10 ? "Rival fleet clipped you!" : "Bump! Watch the traffic ahead.");
 }
 
-/* ---------- drawing ---------- */
-function poly(pts, col) {
-  ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
-  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+/* ================= drawing ================= */
+function fillPoly(points, color) {
+  ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(points[0][0], points[0][1]);
+  for (let i = 1; i < points.length; i++) ctx.lineTo(points[i][0], points[i][1]);
   ctx.closePath(); ctx.fill();
 }
-const DSTEP = 3;
-function strip(latA, latB, col) {
-  const L = [], R = [];
-  for (let d = 1; d <= DMAX; d += DSTEP) { const s = V.camS + d; L.push([PX(latA, s), PY(0, s)]); R.push([PX(latB, s), PY(0, s)]); }
-  poly([...L, ...R.reverse()], col);
+function roadEdgeLine(lat, color, width) {
+  ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath();
+  for (let d = 1; d <= VIEW_DIST; d += SEG) {
+    const s = cam.s + d;
+    d === 1 ? ctx.moveTo(projX(lat, s), projY(0, s)) : ctx.lineTo(projX(lat, s), projY(0, s));
+  }
+  ctx.stroke();
 }
 function drawBackdrop(night) {
-  const img = night ? bgNight : bgDay;
-  // the photo's horizon sits on HY; curves nudge it sideways so the scene feels like it bends
-  const shift = -OFF(V.camS) * 9 - (tt * 6) % 40;
-  ctx.fillStyle = night ? "#06080f" : "#8fb3d6"; ctx.fillRect(0, 0, W, H);
-  if (img) {
-    const ih = bgH, iw = bgW;
-    const y = HY - 0.55 * ih;
-    ctx.drawImage(img, (W - iw) / 2 + shift, y, iw, ih);
-  }
+  const img = assets[night ? "nightBg" : "dayBg"];
+  ctx.fillStyle = night ? "#06080f" : "#8fb3d6";
+  ctx.fillRect(0, 0, W, H);
+  if (!img) return;
+  // photo is scaled so it always covers the screen, and its horizon line sits on HORIZON
+  const aspect = img.width / img.height, horizonFrac = night ? 0.55 : 0.55;
+  const drawH = Math.max(H * 1.2, W / aspect), drawW = drawH * aspect;
+  const maxShift = (drawW - W) / 2;
+  const shift = clamp(-(CURVE(cam.s) - CURVE(0)) * 8, -maxShift, maxShift);
+  ctx.drawImage(img, (W - drawW) / 2 + shift, HORIZON - horizonFrac * drawH, drawW, drawH);
 }
 function drawRoad(night) {
-  const asphalt = night ? "rgba(18,20,26,.55)" : "rgba(35,38,46,.45)";
-  // the road is laid over the photo, translucent so the photo's street still shows through
-  strip(-ROAD, ROAD, asphalt);
-  const first = Math.floor(V.camS / 12) * 12;
-  for (let s0 = first; s0 < V.camS + DMAX; s0 += 12) {
-    const a = Math.max(s0, V.camS + 1), b = s0 + 6;
+  // translucent asphalt so the photo's street still shows through
+  const asphalt = night ? "rgba(16,18,24,.6)" : "rgba(30,33,40,.42)";
+  const left = [], right = [];
+  for (let d = 1; d <= VIEW_DIST; d += SEG) {
+    const s = cam.s + d;
+    left.push([projX(-LANE_HALF, s), projY(0, s)]);
+    right.push([projX(LANE_HALF, s), projY(0, s)]);
+  }
+  fillPoly([...left, ...right.reverse()], asphalt);
+
+  // dashed centre line, scrolling with the car
+  const dash = night ? "rgba(255,240,200,.5)" : "rgba(255,255,240,.8)";
+  const period = 12, first = Math.floor(cam.s / period) * period;
+  for (let s0 = first; s0 < cam.s + VIEW_DIST; s0 += period) {
+    const a = Math.max(s0, cam.s + 1), b = s0 + 6;
     if (b <= a) continue;
     const front = [], back = [];
-    for (let k = 0; k <= 4; k++) { const s = a + (b - a) * k / 4; front.push([PX(-0.22, s), PY(0, s)]); }
-    for (let k = 4; k >= 0; k--) { const s = a + (b - a) * k / 4; back.push([PX(0.22, s), PY(0, s)]); }
-    poly([...front, ...back], night ? "rgba(255,240,200,.45)" : "rgba(255,255,240,.7)");
+    for (let k = 0; k <= 4; k++) { const s = a + (b - a) * k / 4; front.push([projX(-0.22, s), projY(0, s)]); }
+    for (let k = 4; k >= 0; k--) { const s = a + (b - a) * k / 4; back.push([projX(0.22, s), projY(0, s)]); }
+    fillPoly([...front, ...back], dash);
   }
-  ctx.strokeStyle = night ? "rgba(255,240,200,.5)" : "rgba(255,255,240,.75)"; ctx.lineWidth = 3;
-  for (const e of [-ROAD + 0.4, ROAD - 0.4]) {
-    ctx.beginPath();
-    for (let d = 1; d <= DMAX; d += DSTEP) { const s = V.camS + d; d === 1 ? ctx.moveTo(PX(e, s), PY(0, s)) : ctx.lineTo(PX(e, s), PY(0, s)); }
-    ctx.stroke();
-  }
+  const edge = night ? "rgba(255,240,200,.5)" : "rgba(255,255,240,.8)";
+  roadEdgeLine(-LANE_HALF + 0.4, edge, 3);
+  roadEdgeLine(LANE_HALF - 0.4, edge, 3);
 }
-function drawGantry(s, label, col) {
-  const d = s - V.camS;
-  if (d < 1.5 || d > DMAX) return;
-  const hTop = 7, hBar = 6.2;
-  ctx.strokeStyle = "#0b0c0f"; ctx.lineWidth = Math.max(3, F / d * 0.2);
-  ctx.beginPath(); ctx.moveTo(PX(-8, s), PY(0, s)); ctx.lineTo(PX(-8, s), PY(hTop, s)); ctx.moveTo(PX(8, s), PY(0, s)); ctx.lineTo(PX(8, s), PY(hTop, s)); ctx.stroke();
-  poly([[PX(-8, s), PY(hTop, s)], [PX(8, s), PY(hTop, s)], [PX(8, s), PY(hBar, s)], [PX(-8, s), PY(hBar, s)]], col);
-  const fs = Math.max(12, Math.min(40, F / d * 0.9));
-  ctx.fillStyle = "#0b0c0f"; ctx.font = `800 ${fs}px 'Barlow Condensed',Arial`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  ctx.fillText(label, W / 2, PY(hTop + 1.4, s));
+function drawGantry(s, label, color) {
+  const d = s - cam.s;
+  if (d < 1.5 || d > VIEW_DIST) return;
+  const top = 7, bar = 6.2, lw = Math.max(3, FOCAL / d * 0.2);
+  ctx.strokeStyle = "#0b0c0f"; ctx.lineWidth = lw; ctx.beginPath();
+  ctx.moveTo(projX(-8, s), projY(0, s)); ctx.lineTo(projX(-8, s), projY(top, s));
+  ctx.moveTo(projX(8, s), projY(0, s)); ctx.lineTo(projX(8, s), projY(top, s)); ctx.stroke();
+  fillPoly([[projX(-8, s), projY(top, s)], [projX(8, s), projY(top, s)], [projX(8, s), projY(bar, s)], [projX(-8, s), projY(bar, s)]], color);
+  const fs = clamp(FOCAL / d * 0.9, 12, 40);
+  ctx.fillStyle = "#0b0c0f"; ctx.font = `800 ${fs}px 'Barlow Condensed',Arial`;
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText(label, W / 2, projY(top + 1.4, s));
 }
-// draw a car from behind: real sprite when loaded, simple shape otherwise
-function drawCarAt(lat, s, sprite, fallbackCol, hue, isRival) {
-  const d = s - V.camS;
-  if (d < 1.2 || d > DMAX) return;
-  const sc = F / d, cx = PX(lat, s), baseY = PY(0, s);
+// draws a car seen from behind: the cut-out sprite when it has loaded, otherwise a simple drawn car
+function drawCar(lat, s, spriteKey, hue, isRival) {
+  const d = s - cam.s;
+  if (d < 1.2 || d > VIEW_DIST) return;
+  const sc = FOCAL / d, cx = projX(lat, s), base = projY(0, s);
+  const sprite = assets[spriteKey];
+  ctx.save();
+  ctx.fillStyle = "rgba(0,0,0,.35)";
+  ctx.beginPath(); ctx.ellipse(cx, base, sc * 1.1, sc * 0.16, 0, 0, Math.PI * 2); ctx.fill();
   if (sprite) {
     const w = 2.3 * sc, h = w * sprite.height / sprite.width;
-    ctx.save();
     if (hue) ctx.filter = `hue-rotate(${hue}deg)`;
-    ctx.fillStyle = "rgba(0,0,0,.35)"; ctx.beginPath(); ctx.ellipse(cx, baseY, w * 0.5, sc * 0.16, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.drawImage(sprite, cx - w / 2, baseY - h * 0.92, w, h);
-    ctx.restore();
+    ctx.drawImage(sprite, cx - w / 2, base - h * 0.92, w, h);
   } else {
-    const w = 2 * sc, h = 1.25 * sc;
-    ctx.fillStyle = fallbackCol; ctx.fillRect(cx - w / 2, baseY - h, w, h);
+    const w = 2 * sc, h = 1.2 * sc, x = cx - w / 2, y = base - h;
+    ctx.fillStyle = isRival ? "#15161a" : "#16b3a4";
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, sc * 0.2); ctx.fill();
+    ctx.fillStyle = "#ff3b3b";
+    ctx.fillRect(x + w * 0.06, y + h * 0.5, w * 0.14, h * 0.18); ctx.fillRect(x + w * 0.8, y + h * 0.5, w * 0.14, h * 0.18);
   }
-  if (isRival) { ctx.fillStyle = Math.floor(tt * 6) % 2 ? "#ff2d2d" : "#2d7bff"; ctx.fillRect(cx - sc * 0.2, baseY - sc * 1.6, sc * 0.4, sc * 0.14); }
+  if (isRival) {
+    ctx.fillStyle = Math.floor(clock * 6) % 2 ? "#ff2d2d" : "#2d7bff";
+    ctx.fillRect(cx - sc * 0.2, base - sc * 1.6, sc * 0.4, sc * 0.14);
+  }
+  ctx.restore();
 }
 function drawCockpit() {
-  poly([[0, H * 0.72], [W * 0.18, H * 0.66], [W * 0.82, H * 0.66], [W, H * 0.72], [W, H], [0, H]], "#1a1d25");
-  ctx.strokeStyle = "#0b0c0f"; ctx.lineWidth = 16;
-  ctx.beginPath(); ctx.arc(W / 2 - W * 0.02, H * 1.15, W * 0.36, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+  fillPoly([[0, H * 0.72], [W * 0.18, H * 0.66], [W * 0.82, H * 0.66], [W, H * 0.72], [W, H], [0, H]], "#1a1d25");
+  ctx.strokeStyle = "#0b0c0f"; ctx.lineWidth = 16; ctx.beginPath();
+  ctx.arc(W / 2, H * 1.15, W * 0.36, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
 }
-function draw() {
-  ctx.setTransform(D, 0, 0, D, 0, 0);
-  const view = VIEWS[viewI], night = M.night;
-  V = { camS: car.s - view.camD, camLat: car.lat * view.follow, camH: view.camH };
+function render() {
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  const view = VIEWS[viewIndex], night = M.night;
+  cam = { s: car.s - view.camD, lat: car.lat * view.follow, h: view.camH };
   drawBackdrop(night);
   drawRoad(night);
   drawGantry(M.drop, "DROP", "#ffc928");
   if (stage === 0) drawGantry(M.pick, "PICKUP", "#2fe0ff");
-  const cars = traffic.map(t => ({ o: t, rival: false })); if (rival) cars.push({ o: rival, rival: true });
-  cars.sort((a, b) => b.o.s - a.o.s);
-  for (const c of cars) drawCarAt(c.o.lat, c.o.s, c.rival ? c.o.sprite : c.o.sprite, c.o.col || "#666", c.rival ? 0 : c.o.hue, c.rival);
-  if (view.showCar) drawCarAt(car.lat, car.s, PLAYER_SPRITE, "#16b3a4", 0, false);
-  if (!view.showCar) drawCockpit();
-  const fg = ctx.createLinearGradient(0, HY - 40, 0, HY + 60);
-  fg.addColorStop(0, night ? "rgba(10,12,30,.6)" : "rgba(230,160,120,.25)"); fg.addColorStop(1, "rgba(0,0,0,0)");
-  ctx.fillStyle = fg; ctx.fillRect(0, HY - 40, W, 100);
+
+  const cars = traffic.map(t => ({ c: t, rival: false }));
+  if (rival) cars.push({ c: rival, rival: true });
+  cars.sort((a, b) => b.c.s - a.c.s);
+  for (const { c, rival: isRival } of cars) {
+    isRival ? drawCar(c.lat, c.s, "rival", 0, true) : drawCar(c.lat, c.s, c.key, c.hue, false);
+  }
+  if (view.showCar) drawCar(car.lat, car.s, "playerCar", 0, false);
+  else drawCockpit();
+
+  const fog = ctx.createLinearGradient(0, HORIZON - 40, 0, HORIZON + 60);
+  fog.addColorStop(0, night ? "rgba(10,12,30,.6)" : "rgba(230,160,120,.25)");
+  fog.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = fog; ctx.fillRect(0, HORIZON - 40, W, 100);
   if (night) {
-    const cx = W / 2, cy = H * 0.7;
-    const rg = ctx.createRadialGradient(cx, cy, 40, cx, cy, Math.max(W, H) * 0.75);
-    rg.addColorStop(0, "rgba(4,6,20,0)"); rg.addColorStop(1, "rgba(4,6,20,.85)");
-    ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H);
+    const g = ctx.createRadialGradient(W / 2, H * 0.7, 40, W / 2, H * 0.7, Math.max(W, H) * 0.75);
+    g.addColorStop(0, "rgba(4,6,20,0)"); g.addColorStop(1, "rgba(4,6,20,.85)");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
   }
 }
 
-/* ---------- loop ---------- */
-let last = performance.now();
-function frame(t) {
-  const dt = Math.min(0.033, (t - last) / 1000); last = t;
+/* ================= main loop ================= */
+let lastFrame = performance.now();
+function frame(now) {
+  const dt = Math.min(0.033, (now - lastFrame) / 1000);
+  lastFrame = now;
   try {
-    if (mode === "menu") { tt += dt; ctx.setTransform(D, 0, 0, D, 0, 0); V = { camS: tt * 14, camLat: 0, camH: 1.3 }; drawBackdrop(false); drawRoad(false); }
-    else { update(dt); draw(); }
-  } catch (e) { console.error(e); }
+    if (mode === "menu") {
+      clock += dt;
+      cam = { s: clock * 14, lat: 0, h: 1.3 };
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      drawBackdrop(false); drawRoad(false);
+    } else {
+      simulate(dt);
+      render();
+    }
+  } catch (err) { console.error(err); }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
