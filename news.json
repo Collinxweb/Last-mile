@@ -1,0 +1,42 @@
+{
+  "updated": "2026-11-16",
+  "note": "Each item must be checked against its source before release. Set reviewed to true only after you have read the original article.",
+  "items": [
+    {
+      "id": "gpt-5-6",
+      "date": "2026-07-08",
+      "headline": "OpenAI is expected to make GPT-5.6 publicly available after a limited rollout",
+      "source": "Euronews",
+      "url": "https://www.euronews.com/2026/07/08/openai-meta-and-spacexai-push-new-ai-models-in-a-week-of-major-releases",
+      "status": "reported",
+      "reviewed": false
+    },
+    {
+      "id": "meta-muse-image",
+      "date": "2026-07-08",
+      "headline": "Meta launched Muse Image, its first image-generation model from Meta Superintelligence Labs",
+      "source": "Euronews",
+      "url": "https://www.euronews.com/2026/07/08/openai-meta-and-spacexai-push-new-ai-models-in-a-week-of-major-releases",
+      "status": "reported",
+      "reviewed": false
+    },
+    {
+      "id": "self-regulation",
+      "date": "2026-07-17",
+      "headline": "An emerging consensus could end the AI industry's reliance on self-regulation; critics warn certification could favor large firms",
+      "source": "MarketingProfs",
+      "url": "https://www.marketingprofs.com/opinions/2026/55273/ai-update-july-17-2026-ai-news-and-views-from-the-past-week",
+      "status": "reported",
+      "reviewed": false
+    },
+    {
+      "id": "grok-4-5",
+      "date": "2026-07-07",
+      "headline": "SpaceXAI is reportedly launching a major new model, Grok 4.5, as early as Wednesday",
+      "source": "Gizmodo",
+      "url": "https://gizmodo.com/spacexai-will-reportedly-release-a-major-new-ai-model-this-week-2000782710",
+      "status": "reported",
+      "reviewed": false
+    }
+  ]
+}
