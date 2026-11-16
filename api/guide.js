@@ -1,6 +1,8 @@
-// Vercel Serverless Function: AI dispatcher guide.
-// The API key lives in the ANTHROPIC_API_KEY environment variable on Vercel,
-// never in the browser.
+// Vercel Serverless Function: AI dispatcher guide, powered by Groq's free tier.
+// The key lives in the GROQ_API_KEY environment variable on Vercel, never in the browser.
+
+const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+const MODEL = "llama-3.1-8b-instant";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -8,7 +10,7 @@ export default async function handler(req, res) {
   }
 
   const { mission, story, news, stage, question } = req.body || {};
-  const key = process.env.ANTHROPIC_API_KEY;
+  const key = process.env.GROQ_API_KEY;
 
   // No key set: the game falls back to its scripted hints.
   if (!key) {
@@ -30,27 +32,30 @@ export default async function handler(req, res) {
   ].join("\n");
 
   try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
+    const r = await fetch(GROQ_URL, {
       method: "POST",
       headers: {
-        "content-type": "application/json",
-        "x-api-key": key,
-        "anthropic-version": "2023-06-01"
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${key}`
       },
       body: JSON.stringify({
-        model: "claude-haiku-5-5",
+        model: MODEL,
         max_tokens: 150,
-        system,
-        messages: [{ role: "user", content: user }]
+        temperature: 0.7,
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: user }
+        ]
       })
     });
+
+    if (!r.ok) {
+      return res.status(502).json({ error: "guide provider error", status: r.status });
+    }
+
     const data = await r.json();
-    const text = (data.content || [])
-      .filter(b => b.type === "text")
-      .map(b => b.text)
-      .join("")
-      .trim();
-    return res.status(200).json({ text });
+    const text = (data.choices?.[0]?.message?.content || "").trim();
+    return res.status(200).json({ text: text || null });
   } catch (err) {
     return res.status(500).json({ error: "guide unavailable" });
   }
